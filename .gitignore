@@ -1,0 +1,30 @@
+# Environment
+.env
+*.env
+!.env.example
+
+# Credentials
+*credentials*.json
+*service-account*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Django
+/backend/media/
+/backend/staticfiles/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store
