@@ -14,7 +14,7 @@ PRD 的範圍裡沒有查詢介面（見 [PRD.md](../PRD.md) Out of Scope）—�
 
 ### Authentication
 
-用 `X-Line-Signature` 這個 Header 驗證請求真的是 LINE 送來的，不是任何人都能呼叫。防止有人假冒 LINE、塞假資料進資料庫。細節對應 [security.md](security.md)「Verify Signature」。
+用 `X-Line-Signature` 這個 Header 驗證請求真的是 LINE 送來的，不是任何人都能呼叫。防止有人假冒 LINE、塞假資料進資料庫。
 
 **驗證方式**
 

@@ -1,4 +1,4 @@
-"""檔案格式與大小檢查（docs/security.md、Edge case 5）。
+"""檔案格式與大小檢查（Edge case 5）。
 
 判斷格式時只看內容的 magic bytes，不信任副檔名或 LINE 回傳的 Content-Type
 ——那兩個都可以被偽造。不認得的格式一律擋下來。

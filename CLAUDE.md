@@ -149,6 +149,8 @@ GitHub Actions
 - 所有外部 API 呼叫必須可測試。
 - 所有重要功能需要加入測試。
 - 修改架構時同步更新文件。
+- 程式碼風格：Type hint、Docstring、Black + isort（設定在 `pyproject.toml`）。
+  函式不超過 40 行、檔案不超過 300 行，避免 magic number 與深層巢狀 if。
 
 
 ---

@@ -50,7 +50,7 @@ LINE 期待 Webhook 很快回應，但上傳一部影片到 Google Drive 可能�
 Service 與 RetryService 就不用認得任何外部 SDK 的錯誤型別。
 
 
-每一層只做一件事：View 只管 HTTP、Service 管邏輯、Repository 管資料庫、Client 管外部 API。這樣測試 Service 時可以直接假造一個 Client，不用真的呼叫 Notion / Google Drive，也符合 [coding-style.md](coding-style.md) 「不寫超長函式、不重複邏輯」的原則。
+每一層只做一件事：View 只管 HTTP、Service 管邏輯、Repository 管資料庫、Client 管外部 API。這樣測試 Service 時可以直接假造一個 Client，不用真的呼叫 Notion / Google Drive。
 
 ---
 

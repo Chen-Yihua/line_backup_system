@@ -24,12 +24,12 @@
   - [x] 設定 `.gitignore`（排除 `.env`、`__pycache__`）
 - [x] **Task**：環境變數設定
   - [x] 安裝 `django-environ`
-  - [x] 建立 `.env.example`，列出 [deployment.md](docs/deployment.md) 的 6 個變數
+  - [x] 建立 `.env.example`
   - [x] `settings.py` 改成讀環境變數，缺必要變數要在啟動時報錯（FR-10）
 - [x] **Task**：安裝依賴與程式碼風格工具
   - [x] 建立 `requirements.txt`
   - [x] 安裝 Django、DRF、pytest、pytest-django、black、isort
-  - [x] 設定 Black / isort 設定檔（對應 [coding-style.md](docs/coding-style.md)）
+  - [x] 設定 Black / isort 設定檔（`pyproject.toml`）
 
 ### Feature 1.2：本機開發環境
 
@@ -56,7 +56,7 @@
   - [x] 寫 migration
   - [x] 寫測試：確認唯一限制真的擋得住重複資料
 
-### Feature 2.2：簽章驗證（對應 [security.md](docs/security.md)）
+### Feature 2.2：簽章驗證
 
 - [x] **Task**：實作 `utils/signature.py`
   - [x] HMAC-SHA256 + base64 驗證函式
@@ -178,11 +178,11 @@
   - [x] 對照 [PRD.md](PRD.md) §6 的 11 個情境，逐一確認有對應測試
 - [x] **Task**：程式碼風格檢查
   - [x] 跑一次 Black / isort，確認全專案格式一致
-  - [x] 檢查有沒有超過 40 行的函式、超過 300 行的檔案（[coding-style.md](docs/coding-style.md)）
+  - [x] 檢查有沒有超過 40 行的函式、超過 300 行的檔案
 
 ---
 
-## Epic 7：部署（對應 [deployment.md](docs/deployment.md)）
+## Epic 7：部署
 
 ⚠️ 整個 Epic 都需要在外部平台操作，等 Epic 1.2 的外部設定完成、本機跑通之後再進行。
 

@@ -1,4 +1,4 @@
-"""驗證 `X-Line-Signature`（FR-2、docs/security.md）。
+"""驗證 `X-Line-Signature`（FR-2）。
 
 LINE 用 Channel Secret 對 request body 做 HMAC-SHA256、再轉 base64。
 這個模組不依賴 Django，也不碰資料庫，方便單獨測試。

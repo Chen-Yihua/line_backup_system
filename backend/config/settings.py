@@ -72,7 +72,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-# --- 安全性（見 docs/security.md：HTTPS Only）---
+# --- 安全性---
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
