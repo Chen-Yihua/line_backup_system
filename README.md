@@ -126,15 +126,35 @@ cd backend && pytest
 
 ### 3. Google Drive
 
-1. Google Cloud Console → 建立專案 → 啟用 **Google Drive API**。
-2. 建立 **Service Account**，產生 JSON 金鑰，存到專案外的安全位置，
-   路徑填 `GOOGLE_APPLICATION_CREDENTIALS`（金鑰檔絕對不要進版控）。
-3. 準備備份用的根資料夾，資料夾 ID 填 `GOOGLE_DRIVE_ROOT_FOLDER_ID`，
-   並把資料夾分享給 service account 的 email，權限給 **編輯者**。
+用 OAuth 以**你本人的身分**上傳到你自己的 Drive（不用 Service Account，原因見
+[docs/architecture.md](docs/architecture.md)「Google Drive 的認證方式」）。個人 Gmail 帳號即可。
 
-> **注意**：service account 沒有自己的 Drive 容量。如果根資料夾放在個人的「我的雲端硬碟」，
-> 上傳會失敗（`storageQuotaExceeded`）。建議放在 **共用雲端硬碟 (Shared Drive)**，
-> 並把 service account 加為成員。程式已經帶 `supportsAllDrives`，共用雲端硬碟可直接用。
+1. [Google Cloud Console](https://console.cloud.google.com/) → 建立專案 → APIs & Services →
+   Library → 啟用 **Google Drive API**。
+2. APIs & Services → **OAuth consent screen**（Google Auth Platform）：
+   - User type 選 **External**，App name 隨意，填自己的 email。
+   - Scopes 不用加（授權時程式會自己要 `drive.file`）。
+   - Audience → **Publish app**，把狀態改成 **In production**。
+     ⚠️ 停在「Testing」的話，token **7 天就會失效**，備份會突然停止。
+     `drive.file` 不是敏感權限，切成 In production 不需要 Google 審核。
+3. **Clients** → Create client → 類型選 **Desktop app** → 下載 JSON，
+   放到 `secrets/client_secret.json`（`secrets/` 不會進版控）。
+4. `.env` 設定 token 要存哪：`GOOGLE_OAUTH_TOKEN_FILE=secrets/drive-token.json`
+5. 執行一次授權（在專案根目錄）：
+
+   ```bash
+   python backend/manage.py authorize_drive secrets/client_secret.json
+   ```
+
+   打開印出來的網址，用你的 Google 帳號登入並同意。會看到「Google 尚未驗證這個應用程式」，
+   按 **進階 → 前往（不安全）** 即可（這是你自己建的 app）。完成後指令會：
+   - 把 token 存到 `secrets/drive-token.json`
+   - 在你的 Drive 建立 `LINE Message Archive` 資料夾，印出
+     `GOOGLE_DRIVE_ROOT_FOLDER_ID=...`，貼進 `.env`
+
+> 根資料夾一定要讓指令建立，不能自己手動建：程式的權限只有 `drive.file`，
+> 只看得到自己建立的檔案，看不到你 Drive 裡其他任何東西。
+> 授權失效（撤銷存取、改密碼）時，重跑第 5 步即可，同名資料夾會沿用。
 
 ### 4. 部署（Epic 7）
 

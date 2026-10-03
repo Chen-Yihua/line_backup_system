@@ -86,7 +86,10 @@ LINE_CHANNEL_ACCESS_TOKEN = env("LINE_CHANNEL_ACCESS_TOKEN", default="")
 NOTION_TOKEN = env("NOTION_TOKEN", default="")
 NOTION_DATABASE_ID = env("NOTION_DATABASE_ID", default="")
 
-GOOGLE_APPLICATION_CREDENTIALS = env("GOOGLE_APPLICATION_CREDENTIALS", default="")
+# OAuth token 檔（`manage.py authorize_drive` 產生），見 docs/architecture.md。
+# 相對路徑一律以專案根目錄為準——不然在根目錄授權、在 backend/ 跑 worker 會找不到檔案。
+_token_file = env("GOOGLE_OAUTH_TOKEN_FILE", default="")
+GOOGLE_OAUTH_TOKEN_FILE = str(PROJECT_ROOT / _token_file) if _token_file else ""
 GOOGLE_DRIVE_ROOT_FOLDER_ID = env("GOOGLE_DRIVE_ROOT_FOLDER_ID", default="")
 
 # --- 備份行為（FR-7 固定重試 3 次、Edge case 5 檔案大小上限）---
@@ -98,7 +101,7 @@ REQUIRED_SETTINGS = (
     "LINE_CHANNEL_ACCESS_TOKEN",
     "NOTION_TOKEN",
     "NOTION_DATABASE_ID",
-    "GOOGLE_APPLICATION_CREDENTIALS",
+    "GOOGLE_OAUTH_TOKEN_FILE",
     "GOOGLE_DRIVE_ROOT_FOLDER_ID",
 )
 

@@ -129,7 +129,10 @@
 ### Feature 4.3：DriveClient
 
 - [x] **Task**：建立 `clients/drive_client.py`
-  - [x] 設定 Google Service Account 憑證（憑證與資料夾需先在 Google Cloud / Drive 建立，
+  - [x] ~~設定 Google Service Account 憑證~~ → 改用 OAuth（個人 Gmail 沒有共用雲端硬碟），
+    見 [architecture.md](docs/architecture.md)「Google Drive 的認證方式」
+  - [x] `authorize_drive` 指令：一次性授權 + 建立根資料夾
+  - [ ] 實際授權並上傳一個檔案（OAuth 用戶端需先在 Google Cloud 建立，
     見 [README](README.md#3-google-drive) ⚠️）
   - [x] 找/建資料夾（依對話、年、月）
   - [x] 實作 `upload(folder, filename, bytes) -> file_id`

@@ -142,6 +142,7 @@ LINE 裡的訊息（照片、檔案、筆記）容易遺失、不好搜尋。這
 | 分層架構（View / Service / Repository / Client） | 方便加新功能、方便寫測試（可以塞假的 Client 進去）。 |
 | 固定重試 3 次，沒有 dead-letter queue | 現在的規模不需要更複雜的重試機制，之後真的需要再加（見 Optional Notes）。 |
 | 一個 Notion 資料庫、一個 Drive 資料夾 | 目前只有一個使用者，不需要多租戶設計。 |
+| Drive 用 OAuth（使用者本人授權）上傳，不用 Service Account | Service Account 沒有自己的 Drive 容量，只能寫進共用雲端硬碟，但共用雲端硬碟要付費的 Workspace 才有。用 OAuth 以本人身分上傳，個人 Gmail 帳號也能存進自己的 Drive。 |
 
 ---
 

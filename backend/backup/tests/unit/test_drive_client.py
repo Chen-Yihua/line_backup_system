@@ -1,10 +1,21 @@
 """DriveClient 測試（Edge case 8）——不會真的打 Google Drive。"""
 
+import stat
+
 import httplib2
 import pytest
+from google.auth.exceptions import RefreshError, TransportError
+from google.oauth2.credentials import Credentials
 from googleapiclient.errors import HttpError
 
-from backup.clients.drive_client import FOLDER_MIME, DriveClient
+from backup.clients.drive_client import (
+    DRIVE_SCOPES,
+    FOLDER_MIME,
+    DriveClient,
+    load_credentials,
+    run_oauth_flow,
+    save_credentials,
+)
 from backup.errors import PermanentError, TransientError
 
 
@@ -118,9 +129,65 @@ def test_network_error_is_transient():
         client.upload("folder-1", "a.png", b"x", "image/png")
 
 
-def test_missing_credentials_path_is_permanent():
-    """建構時不碰金鑰，第一次真的要用才報錯（讓組路由表不會爆炸）。"""
-    client = DriveClient(credentials_path="")
+def make_credentials() -> Credentials:
+    """授權完會拿到的那種 credentials（假的值，不會拿去打 Google）。"""
+    return Credentials(
+        token="access-token",
+        refresh_token="refresh-token",
+        token_uri="https://oauth2.googleapis.com/token",
+        client_id="client-id",
+        client_secret="client-secret",
+        scopes=DRIVE_SCOPES,
+    )
+
+
+def test_revoked_authorization_is_permanent():
+    """refresh token 被撤銷，重試也沒用，要人重新授權。"""
+    client = DriveClient(service=FakeService(FakeFiles(error=RefreshError("invalid_grant"))))
+
+    with pytest.raises(PermanentError, match="authorize_drive"):
+        client.upload("folder-1", "a.png", b"x", "image/png")
+
+
+def test_token_refresh_network_error_is_transient():
+    client = DriveClient(service=FakeService(FakeFiles(error=TransportError("dns"))))
+
+    with pytest.raises(TransientError):
+        client.upload("folder-1", "a.png", b"x", "image/png")
+
+
+def test_missing_token_setting_is_permanent():
+    """建構時不碰 token，第一次真的要用才報錯（讓組路由表不會爆炸）。"""
+    client = DriveClient(token_path="")
 
     with pytest.raises(PermanentError):
         _ = client.service
+
+
+def test_missing_token_file_tells_user_to_authorize(tmp_path):
+    with pytest.raises(PermanentError, match="authorize_drive"):
+        load_credentials(str(tmp_path / "nope.json"))
+
+
+def test_saved_token_can_be_loaded_back(tmp_path):
+    token_path = tmp_path / "secrets" / "drive-token.json"
+
+    save_credentials(make_credentials(), str(token_path))
+    loaded = load_credentials(str(token_path))
+
+    assert loaded.refresh_token == "refresh-token"
+    assert loaded.client_id == "client-id"
+
+
+def test_saved_token_is_only_readable_by_owner(tmp_path):
+    """token 等同 Drive 的存取權，別的使用者不能讀。"""
+    token_path = tmp_path / "drive-token.json"
+
+    save_credentials(make_credentials(), str(token_path))
+
+    assert stat.S_IMODE(token_path.stat().st_mode) == 0o600
+
+
+def test_oauth_flow_with_missing_client_file_is_permanent(tmp_path):
+    with pytest.raises(PermanentError, match="OAuth"):
+        run_oauth_flow(str(tmp_path / "client_secret.json"))

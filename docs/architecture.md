@@ -42,13 +42,20 @@ LINE 期待 Webhook 很快回應，但上傳一部影片到 Google Drive 可能�
 | `models.py` | 資料表定義（`RawEvent`、`BackupRecord`）。 |
 | `errors.py` | 共用的錯誤分類（`TransientError` / `PermanentError` / `SkipError`）。 |
 | `utils/` | 沒有依賴的小工具函式（驗證簽章、判斷檔案類型、切字串、JSON log）。 |
-| `management/commands/` | 背景 worker 的進入點。 |
+| `management/commands/` | 背景 worker 的進入點，以及一次性的 Google Drive 授權指令。 |
 
 `errors.py` 存在的理由：Retry 流程只需要知道「這個錯誤重試有沒有意義」。
 由 Client 層把各家 SDK 的例外（`notion_client.APIResponseError`、
 `googleapiclient.errors.HttpError`、`requests.Timeout`…）翻譯成這三種，
 Service 與 RetryService 就不用認得任何外部 SDK 的錯誤型別。
 
+
+**Google Drive 的認證方式**：用 OAuth 以使用者本人的身分上傳，不用 Service Account。
+Service Account 沒有自己的 Drive 容量，只能寫進共用雲端硬碟（要付費的 Workspace 才有），
+個人 Gmail 帳號用不了。授權只需要做一次：`authorize_drive` 指令開瀏覽器讓使用者同意，
+把 refresh token 存成檔案（`GOOGLE_OAUTH_TOKEN_FILE`），之後 `DriveClient` 讀這個檔案，
+access token 過期時由 google-auth 自動更新。權限只要 `drive.file`——程式只看得到自己建立的檔案，
+所以備份根資料夾也由 `authorize_drive` 建立。
 
 每一層只做一件事：View 只管 HTTP、Service 管邏輯、Repository 管資料庫、Client 管外部 API。這樣測試 Service 時可以直接假造一個 Client，不用真的呼叫 Notion / Google Drive。
 
@@ -141,7 +148,8 @@ backend/
     │   ├── text_splitter.py      # 長文字切割
     │   └── logging.py             # 結構化 JSON log
     ├── management/commands/
-    │   └── process_pending_backups.py
+    │   ├── process_pending_backups.py
+    │   └── authorize_drive.py      # 一次性：Google Drive OAuth 授權 + 建立根資料夾
     └── tests/
         ├── conftest.py            # 共用 fixture 與假 payload
         ├── unit/                  # 每個 service/client 一個測試檔，外部 API 全部用假的
