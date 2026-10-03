@@ -99,6 +99,7 @@ cd backend && pytest
    在 設定 → Messaging API 按「啟用 Messaging API」並選擇 Provider。
    之後這個 channel 會出現在 [LINE Developers Console](https://developers.line.biz/console/)，
    以下步驟都在 Console 裡操作。
+   ⚠️ Provider 名稱不能包含「LINE」（大小寫都算），否則會出現 400 Bad request。
 2. Basic settings → 複製 **Channel secret** → `LINE_CHANNEL_SECRET`
 3. Messaging API → 發行 **Channel access token (long-lived)** → `LINE_CHANNEL_ACCESS_TOKEN`
 4. Messaging API → Webhook URL 填 `https://<ngrok 網址>/webhook`，
