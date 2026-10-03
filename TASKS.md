@@ -34,7 +34,7 @@
 ### Feature 1.2：本機開發環境
 
 - [ ] **Task**：確認本機可以跑起來
-  - [ ] `python manage.py runserver` 正常啟動（本機 PostgreSQL）
+  - [x] `python manage.py runserver` 正常啟動（本機 PostgreSQL，`docker compose up -d`）
   - [ ] 設定 ngrok，取得對外網址
 - [ ] **Task**：LINE 後台設定 ⚠️ 需要到外部平台操作，見 [README](README.md#1-line-messaging-api)
   - [ ] 建立 LINE Messaging API Channel
