@@ -195,6 +195,9 @@
 - [ ] **Task**：設定 Google App Engine
   - [ ] 寫 `app.yaml`
   - [ ] 設定排程觸發 `process_pending_backups`（見 [architecture.md](docs/architecture.md) Flow 2）
+- [ ] **Task**：Google OAuth 改成正式版（測試狀態 token 7 天失效）
+  - [ ] 準備公開的首頁與隱私權政策網址（例如 GitHub Pages），填進 Branding
+  - [ ] Publish app → In production，重跑 `authorize_drive`
 - [ ] **Task**：上線前檢查
   - [ ] 部署前先跑 `migrate`
   - [ ] 正式環境的 LINE Webhook URL 設定完成

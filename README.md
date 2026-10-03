@@ -134,9 +134,11 @@ cd backend && pytest
 2. APIs & Services → **OAuth consent screen**（Google Auth Platform）：
    - User type 選 **External**，App name 隨意，填自己的 email。
    - Scopes 不用加（授權時程式會自己要 `drive.file`）。
-   - Audience → **Publish app**，把狀態改成 **In production**。
-     ⚠️ 停在「Testing」的話，token **7 天就會失效**，備份會突然停止。
-     `drive.file` 不是敏感權限，切成 In production 不需要 Google 審核。
+   - Audience（目標對象）→ **Test users** 加入你自己的 Gmail（測試狀態下只有名單內的帳號能授權）。
+   - ⚠️ 測試狀態下 token **7 天就會失效**，要重跑第 5 步。開發時可以接受；
+     要長期自動備份（正式上線）時，改成 **Publish app → In production**：
+     需要先在 Branding（品牌）頁填好公開的**首頁網址**與**隱私權政策網址**，
+     `drive.file` 不是敏感權限，不需要 Google 審核。
 3. **Clients** → Create client → 類型選 **Desktop app** → 下載 JSON，
    放到 `secrets/client_secret.json`（`secrets/` 不會進版控）。
 4. `.env` 設定 token 要存哪：`GOOGLE_OAUTH_TOKEN_FILE=secrets/drive-token.json`
