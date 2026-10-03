@@ -13,24 +13,24 @@
 ## 快速開始（本機）
 
 本機與正式都用 PostgreSQL（見 [docs/database.md](docs/database.md) Migration Strategy），
-所以本機也需要一顆能連線的 PostgreSQL。最快的方式是用 Docker 起一個：
+所以本機也需要一顆能連線的 PostgreSQL。用專案根目錄的 `docker-compose.yml` 起一個
+（帳密已對應 `.env.example` 的 `DATABASE_URL`，資料存在 volume，重開不會消失）：
 
 ```bash
-docker run -d --name line-backup-db -p 5432:5432 \
-  -e POSTGRES_DB=line_backup_system \
-  -e POSTGRES_PASSWORD=postgres \
-  postgres:16
+docker compose up -d      # 啟動
+docker compose down       # 停止（加 -v 會連資料一起刪掉）
 ```
 
 沒有 Docker 的話，用系統套件管理員裝 PostgreSQL 也可以，只要建一個
 `line_backup_system` 資料庫，帳密對應 `.env` 的 `DATABASE_URL` 即可。
 
 ```bash
-cd backend
-python -m venv .venv && source .venv/bin/activate
-pip install -r ../requirements.txt
+# 在專案根目錄建立虛擬環境（整個專案共用這一個 .venv）
+python3.12 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 
-cp ../.env.example ../.env      # 填入下面「外部平台設定」拿到的值，DATABASE_URL 對應上面的 PostgreSQL
+cp .env.example .env      # 填入下面「外部平台設定」拿到的值，DATABASE_URL 對應上面的 PostgreSQL
+cd backend
 python manage.py migrate
 python manage.py runserver
 ```
