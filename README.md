@@ -10,6 +10,38 @@
 
 ---
 
+## 專案背景
+
+這個專案源自 2022 年的工作需求：團隊日常用 LINE 群組溝通，
+群組裡傳的檔案和照片過一段時間就會過期，而且散落在各個聊天室，
+需要時很難找。當時主管希望在不改變大家使用習慣的前提下，把工作群組的檔案自動留存下來。
+
+解法是把 LINE Bot 加進既有群組：群組裡傳的訊息會透過 Webhook 送到後端，
+文字寫進 Notion、媒體上傳到 Google Drive，成員不需要做任何額外操作。
+
+為什麼不用現成方案：
+
+| 方案 | 不適用的原因 |
+|---|---|
+| LINE 官方聊天記錄備份 | 只能還原回 LINE，無法成為可搜尋、可管理的檔案庫 |
+| 手動存到 Keep / 下載 | 要靠每個人記得做，檔案仍然分散 |
+| 改用 LINE WORKS | 同事與客戶都已在一般 LINE 上，全部轉移的成本太高 |
+
+原始版本的程式碼屬於公司，這個 repo 是我依照當時的需求**重新實作**的版本，
+並補強了 Webhook 重送防重複、失敗重試與錯誤分類、自動化測試等可靠性設計。
+
+2022 年之後 LINE Messaging API 的使用方式也有調整，重做時一併對應：
+
+| 變化 | 本專案的對應 |
+|---|---|
+| 2024 年起不能直接在 LINE Developers Console 建立 Messaging API channel，要先建立 LINE 官方帳號，再到 LINE Official Account Manager 啟用 Messaging API | 依新流程更新下方「外部平台設定」 |
+| 官方 Python SDK 改版為 v3（`linebot.v3`），舊版 API 已標為 deprecated | 只需要「下載訊息內容」一支 endpoint，直接用 `requests` 呼叫，不依賴 SDK，日後 SDK 再改版也不受影響 |
+
+**限制**：受限於 LINE Messaging API，Bot 只收得到它所在的對話，
+無法備份一般的一對一私人聊天，也拿不到 Bot 加入之前的舊訊息。
+
+---
+
 ## 快速開始（本機）
 
 本機與正式都用 PostgreSQL（見 [docs/database.md](docs/database.md) Migration Strategy），
@@ -63,8 +95,10 @@ cd backend && pytest
 
 ### 1. LINE Messaging API
 
-1. 到 [LINE Developers Console](https://developers.line.biz/console/) 建立 Provider 與
-   **Messaging API** channel。
+1. 到 [LINE Official Account Manager](https://manager.line.biz/) 建立 LINE 官方帳號，
+   在 設定 → Messaging API 按「啟用 Messaging API」並選擇 Provider。
+   之後這個 channel 會出現在 [LINE Developers Console](https://developers.line.biz/console/)，
+   以下步驟都在 Console 裡操作。
 2. Basic settings → 複製 **Channel secret** → `LINE_CHANNEL_SECRET`
 3. Messaging API → 發行 **Channel access token (long-lived)** → `LINE_CHANNEL_ACCESS_TOKEN`
 4. Messaging API → Webhook URL 填 `https://<ngrok 網址>/webhook`，
