@@ -1,0 +1,22 @@
+# 本機開發用的 PostgreSQL（正式環境用 Cloud SQL，不走這個檔案）。
+# 帳密與資料庫名稱對應 .env.example 的 DATABASE_URL，
+# 也是 backend/config/settings_test.py 的預設值，所以跑測試不用另外設定。
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: line_backup_system
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d line_backup_system"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
